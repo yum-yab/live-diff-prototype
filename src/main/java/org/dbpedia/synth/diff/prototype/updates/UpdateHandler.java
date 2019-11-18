@@ -54,7 +54,7 @@ public class UpdateHandler {
     if (lastDiff != null) {
       this.lastDiffVersion = lastDiff;
     } else {
-      logger.error("No lastVersion defined in the last Version file. To run the graph from start ");
+      logger.error("No lastVersion defined in the last Version file.");
       System.exit(1);
     }
   }

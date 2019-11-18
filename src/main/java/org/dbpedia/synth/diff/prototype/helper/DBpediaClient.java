@@ -21,7 +21,7 @@ public final class DBpediaClient {
    * @return String response from DB service
    */
 
-  public static List<QuerySolution> sendQuery(Query query, String endpoint) {
+  static List<QuerySolution> sendQuery(Query query, String endpoint) {
     ResultSet resultSet;
     try (QueryExecution execution = QueryExecutionFactory.sparqlService(endpoint, query)) {
       resultSet = execution.execSelect();

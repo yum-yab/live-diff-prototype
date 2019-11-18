@@ -324,10 +324,6 @@ public final class Utils {
         }
     }
 
-    public static boolean anotherURIValidator (String uri) {
-        return uriPattern.matcher(uri).matches();
-    }
-
     public static String getUriIdentifier(String uri){
         Pattern uriRegex = Pattern.compile(".*\\.[\\w]+(\\/.+)*\\/(.+)");
         Matcher m = uriRegex.matcher(uri);

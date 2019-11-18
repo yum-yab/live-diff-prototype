@@ -126,22 +126,6 @@ public class ChangesetExecutor {
         return false;
     }
 
-
-    // inefficient, dont use
-    private <T> Collection<Collection<T>> splitCollection(Collection<T> collection, int chunks) {
-        ArrayList<Collection<T>> lists = new ArrayList<>();
-        for (int i = 0; i < chunks; i++) {
-            lists.add(new ArrayList<T>());
-        }
-        int counter = 0;
-        for (T item : collection) {
-            int index = counter % chunks;
-            lists.get(index).add(item);
-            counter++;
-        }
-        return lists;
-    }
-
     private boolean executeSparulWrapper(String sparul) {
         try {
             sparulExecutor.executeSPARUL(sparul);
