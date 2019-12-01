@@ -31,7 +31,7 @@ public class UpdateHandler {
   private LastVersionFileWriter lastVersionFileWriter;
 
   // patterns to generate the names
-  private final Pattern splitFilename = Pattern.compile("([a-z\\-]+)(_[a-zA-Z-=_]+)(.[\\w\\.]+)");
+  private final Pattern splitFilename = Pattern.compile("([a-z\\-]+)(_[a-zA-Z-=_]+)(.[\\w.]+)");
 
 
 
@@ -86,7 +86,6 @@ public class UpdateHandler {
       Map<String, Map<FileType, DBpediaFile>> updateFiles = new HashMap<>();
       List<String> files = sparqlUtils.getFiles(version);
       for (String fileURL : files) {
-        String filename = Utils.getUriIdentifier(fileURL);
         String graphname = generateGraphname(fileURL);
         DBpediaFile dbpediaFile = generateDBpediaFile(fileURL, version);
         FileType type = getFileTypeFromURL(fileURL);
@@ -132,8 +131,7 @@ public class UpdateHandler {
     if (m.find()) {
       artifactName = getArtifactName(m.group(1));
     }
-    String[] pathArray = {localPath, datasetName, artifactName, version, ""};
-    String path = String.join(File.separator, pathArray);
+    String path = String.join(File.separator, new String[] {localPath, datasetName, artifactName, version, ""});
 
     if (artifactName != null) {
       DBpediaFile dbpediaFile = new DBpediaFile(filename, path, fileURL, artifactName);
@@ -161,7 +159,7 @@ public class UpdateHandler {
     for (Update update : updateList) {
       versions.add(update.version);
     }
-    new File(localPath +"/"+ datasetName).mkdir();
+    new File(localPath +File.separator+ datasetName).mkdir();
 
     for (String artifact : artifacts) {
       String artifactPath = localPath + File.separator + datasetName + File.separator + artifact;

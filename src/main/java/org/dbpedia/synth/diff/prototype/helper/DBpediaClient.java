@@ -25,7 +25,7 @@ public final class DBpediaClient {
     ResultSet resultSet;
     try (QueryExecution execution = QueryExecutionFactory.sparqlService(endpoint, query)) {
       resultSet = execution.execSelect();
-      logger.info("Query sent to: " + endpoint);
+      //logger.info("Query sent to: " + endpoint);
       return ResultSetFormatter.toList(resultSet);
     } catch (Exception e) {
       logger.warn("Tried to send the query to the SparqlService... " + e.getMessage());

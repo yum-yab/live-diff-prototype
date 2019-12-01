@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class Update {
 
-  String id;
+  private String id;
 
   String version;
 
@@ -33,7 +33,7 @@ public class Update {
 
 
 
-  public void applyUpdate() {
+  void applyUpdate() {
     for (String graph : updateFiles.keySet()) {
 
       logger.info("Starting the update with version "+ this.version+" on graph "+graph+"...");

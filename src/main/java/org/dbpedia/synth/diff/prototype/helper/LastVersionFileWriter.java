@@ -34,6 +34,7 @@ public class LastVersionFileWriter {
         if (diffVersionFile.exists() && diffVersionFile.isFile()) {
             this.pathToLastDiffVersion = diffVersionFile.getAbsolutePath();
         } else {
+            logger.info("Couldnt find "+diffVersionFile.getAbsolutePath());
             System.exit(1);
             this.pathToLastDiffVersion = null;
         }

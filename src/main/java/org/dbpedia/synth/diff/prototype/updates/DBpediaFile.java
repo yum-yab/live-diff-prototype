@@ -1,6 +1,6 @@
 package org.dbpedia.synth.diff.prototype.updates;
 
-public class DBpediaFile {
+class DBpediaFile {
     final String filename;
     final String filepath;
     final String downloadURL;

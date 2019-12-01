@@ -36,19 +36,8 @@ public final class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    public static Pattern versionPattern = Pattern.compile("([\\d]{4}\\.[\\d]{2}\\.[\\d]{2})");
-
-    private static final Pattern uriPattern = Pattern.compile("^([a-z0-9+.-]+):(?:\\/\\/(?:((?:[a-z0-9-._~!$&'()*+,;=:]|" +
-            "%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(?::(\\d*))?(\\/(?:[a-z0-9-._~!$&'()*+,;=:@\\/]|" +
-            "%[0-9A-F]{2})*)?|(\\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\\/]|" +
-            "%[0-9A-F]{2})*)?)(?:\\?((?:[a-z0-9-._~!$&'()*+,;=:\\/?@]|" +
-            "%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\\/?@]|" +
-            "%[0-9A-F]{2})*))?$", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern tripleRegex = Pattern.compile("<(.*)> <(.*)> (\".*\"\\^\\^)?<(.*)>[ ]*\\.");
-
-    private final byte[] buffer = new byte[8192];
-
 
     private Utils() {
     }
@@ -73,8 +62,10 @@ public final class Utils {
         return result;
     }
 
-    public static List<String> getTriplesFromFile(String filename) {
+    private static List<String> getTriplesFromFile(String filename) {
         List<String> lines = new ArrayList<>();
+
+        logger.info("Loading and validating triples from file "+ filename);
 
         try (
                 FileInputStream fileInputStream= new FileInputStream(filename);
@@ -126,7 +117,7 @@ public final class Utils {
         return str.toString();
     }
 
-    public static boolean deleteFile(String filename) {
+    private static boolean deleteFile(String filename) {
         try {
             File file = new File(filename);
             boolean retVal = file.delete();
@@ -153,7 +144,7 @@ public final class Utils {
 
         try (
                 FileOutputStream fileOutputStream = new FileOutputStream(filename);
-                OutputStreamWriter out = new OutputStreamWriter(fileOutputStream, "UTF8")
+                OutputStreamWriter out = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8)
         ) {
 
             for (String triple : triples) {
@@ -170,6 +161,8 @@ public final class Utils {
     }
 
     private static String decompressBzip2File (String pathToFile) {
+
+        logger.info("Decompressing the file "+pathToFile);
         String filename = getUriIdentifier(pathToFile);
         String outFilename = pathToFile.substring(0, pathToFile.lastIndexOf("."));
         try (InputStream is = Files.newInputStream(Paths.get(pathToFile));
@@ -313,12 +306,12 @@ public final class Utils {
         return false;
     }
 
-    public static boolean validateURI (String uri) {
+    private static boolean validateURI(String uri) {
         try {
             URI.create(uri);
             return true;
         } catch (Exception e){
-            logger.warn("Found unvalid URI: "+uri+". Removing it from triples ...");
+            logger.warn("Found invalid URI: "+uri+". Removing it from triples ...");
 
             return false;
         }

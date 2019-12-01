@@ -2,6 +2,7 @@ package org.dbpedia.synth.diff.prototype.sparul;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import virtuoso.jdbc4.VirtuosoException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -75,7 +76,7 @@ public class SPARULVosExecutor implements SPARULExecutor {
         }
     }
 
-    private static void execSQL(String query) throws SPARULException {
+    private static void execSQL(String query) throws SPARULException, VirtuosoException {
 
         Connection conn = null;
         Statement stmt = null;
@@ -84,7 +85,7 @@ public class SPARULVosExecutor implements SPARULExecutor {
             conn = JDBCPoolConnection.getPoolConnection();
             stmt = conn.createStatement();
             result = stmt.executeQuery(query);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             throw new SPARULException(e);
 
 

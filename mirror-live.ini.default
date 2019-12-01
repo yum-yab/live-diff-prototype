@@ -6,6 +6,7 @@ Store.class = virtuoso.jdbc4.Driver
 Store.dsn   = jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2
 Store.user  = dba
 Store.pw    = dba
+Store.querySize = 1000
 
 Dataset.name = dbpedia-diff-synth
 Dataset.releaser = denis
@@ -17,33 +18,3 @@ Local.path = /home/denis/Workspace/synth-datadump/
 ;   - next: updates only the next Version of the diff
 ;   - full: updates to the latest version of the diff
 Update.style = next
-
-LiveGraphURI = http://live.dbpedia.org
-
-; Temporary folder to use for downloading & extracting files
-UpdatesDownloadFolder   =   ./
-
-UpdateServerAddress = http://live.dbpedia.org/changesets/
-
-lastPublishedFilename   =   lastPublishedFile.txt
-
-; How often to check for updates (in seconds)
-LiveUpdateInterval = 300
-
-
-;***************************************
-; Ontology Syncing specific Configration
-;***************************************
-
-; SPARQL-Endpoint to get the data from
-repoEndpoint = https://databus.dbpedia.org/testrepo/sparql
-
-; Default graph where we write the ontology
-OntologyGraph = http://dbpedia.org/resource/classes#
-
-; the url where we download the latest DBpedia ontology
-OntologyURL = http://mappings.dbpedia.org/server/ontology/dbpedia.owl
-
-; How often to check for updates (in days)
-OntologyUpdateInterval = 3
-

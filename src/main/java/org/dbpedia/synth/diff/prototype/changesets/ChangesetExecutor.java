@@ -1,12 +1,16 @@
 package org.dbpedia.synth.diff.prototype.changesets;
 
 import com.google.common.collect.Lists;
+import me.tongfei.progressbar.ProgressBar;
+import org.dbpedia.synth.diff.prototype.helper.Global;
 import org.dbpedia.synth.diff.prototype.helper.Utils;
 import org.dbpedia.synth.diff.prototype.sparul.SPARULException;
 import org.dbpedia.synth.diff.prototype.sparul.SPARULExecutor;
 import org.dbpedia.synth.diff.prototype.sparul.SPARULGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import virtuoso.jdbc4.VirtuosoException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,9 +31,12 @@ public class ChangesetExecutor {
 
     private enum Action {ADD, DELETE}
 
+    private int querySize;
+
     public ChangesetExecutor(SPARULExecutor sparulExecutor, SPARULGenerator sparulGenerator) {
         this.sparulExecutor = sparulExecutor;
         this.sparulGenerator = sparulGenerator;
+        this.querySize = Integer.parseInt(Global.getOptions().get("Store.querySize"));
     }
 
     public boolean applyChangeset(Changeset changeset) {
@@ -46,12 +53,14 @@ public class ChangesetExecutor {
         // Deletions must be executed before additions
 
         if (changeset.triplesDeleted() > 0) {
+            logger.info("Started the deleting of " + changeset.triplesDeleted() +" in graph "+ sparulGenerator.graph + "...");
             boolean status_d = executeAction(changeset.getDeletions(), Action.DELETE);
             logger.info("Patch " + changeset.getId() + " DELETED " + changeset.triplesDeleted() + " triples");
             status = status && status_d;
         }
 
         if (changeset.triplesAdded() > 0) {
+            logger.info("Started the adding of " + changeset.triplesAdded() +" in graph "+ sparulGenerator.graph + "...");
             boolean status_a = executeAction(changeset.getAdditions(), Action.ADD);
             logger.info("Patch " + changeset.getId() + " ADDED " + changeset.triplesAdded() + " triples");
             status = status && status_a;
@@ -85,52 +94,35 @@ public class ChangesetExecutor {
     }
 
     private boolean executeAction(List<String> triples, Action action) {
-        boolean result = false;
-        if (triples.size() < 1000) {
-            String pattern = Utils.generateStringFromList(triples, "\n");
+        boolean result = true;
+        if (triples.size() <= querySize) {
+            String pattern = String.join("\n", triples);
             String sparul = action.equals(Action.ADD) ? sparulGenerator.insert(pattern) : sparulGenerator.delete(pattern);
             result = executeSparulWrapper(sparul);
-            if (result) {
-                logger.info("Added "+ triples.size() +" triples to "+ sparulGenerator.graph);
-            }
         } else {
-            int chunks = (int) Math.ceil((double)triples.size()/900);
+            int chunks = (int) Math.ceil((double)triples.size()/ querySize);
             logger.info("Too many triples, splitting the " + triples.size() + " triples into "+ chunks + " chunks...");
-            for (List<String> subList : Lists.partition(triples, 900)) {
-                executeAction(subList, action);
-                result = true;
+            ProgressBar pb = new ProgressBar("Sending to virtuoso:",chunks).start();
+            for (List<String> subList : Lists.partition(triples, querySize)) {
+                String pattern = Utils.generateStringFromList(subList, "\n");
+                String sparul = action.equals(Action.ADD) ? sparulGenerator.insert(pattern) : sparulGenerator.delete(pattern);
+                boolean queryResult = executeSparulWrapper(sparul);
+                result = result && queryResult;
+                pb.step();
             }
+            pb.stop();
         }
-
-        if (result) {
-            return true;
-        }
-        // if only 1 triple just log and return
-        if (triples.size() == 1) {
-            // size = 1, get triple from collection
-            String triple = "";
-            for (String s : triples) {
-                triple = s;
-            }
-            logger.error("Cannot " + action.toString() + " triple: \n" + triple);
-            return false;
-        }
-
-        logger.warn("Tried to " + action.toString() + " " + triples.size() + " but failed, splitting into chunks to spot the error");
-        // Split collection and retry
-        // In the end we will go to one (or more) single problematic triples, log it (previous block) and finish
-        for (List<String> subList : Lists.partition(triples, 5)) {
-            executeAction(subList, action);
-        }
-
-        return false;
+        if (!result) logger.warn("Something went wrong with executing the query, try a smaller query size");
+        return result;
     }
+
 
     private boolean executeSparulWrapper(String sparul) {
         try {
             sparulExecutor.executeSPARUL(sparul);
         } catch (SPARULException e) {
             logger.warn("Error in query execution");
+            logger.warn(e.getMessage());
             return false;
         }
         return true;
