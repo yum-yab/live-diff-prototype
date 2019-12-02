@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ChangesetExecutor {
         this.sparulGenerator = sparulGenerator;
         this.querySize = Integer.parseInt(Global.getOptions().get("Store.querySize"));
     }
-
+    /*
     public boolean applyChangeset(Changeset changeset) {
 
         boolean status = true;
@@ -74,6 +75,29 @@ public class ChangesetExecutor {
 
         return status;
 
+    }
+
+     */
+
+    public boolean applyChangeset(Changeset changeset) {
+        File addsFile = changeset.getAdditions();
+        File deletesFile = changeset.getDeletions();
+
+        boolean deletesresult = false;
+        if(deletesFile != null) {
+            List<String> triples = Utils.getTriplesFromBzip2File(deletesFile);
+            deletesresult=executeAction(triples, Action.DELETE);
+            logger.info("Patch " + changeset.getId() + " DELETED " + triples.size() + " resources");
+        }
+
+        boolean addsresult =false;
+        if (addsFile != null) {
+            List<String> triples = Utils.getTriplesFromBzip2File(addsFile);
+            addsresult=executeAction(triples, Action.ADD);
+            logger.info("Patch " + changeset.getId() + " ADDED " + triples.size() + " resources");
+        }
+
+        return addsresult && deletesresult;
     }
 
     public void clearGraph() {

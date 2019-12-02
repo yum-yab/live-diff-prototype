@@ -1,5 +1,6 @@
 package org.dbpedia.synth.diff.prototype.changesets;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,54 +12,27 @@ import java.util.stream.Collectors;
  */
 public final class Changeset {
     private final String id;
-    private final List<String> additions;
-    private final List<String> deletions;
-    private final List<String> cleared;
-    private final List<String> reinserted;
+    private final File additions;
+    private final File deletions;
 
-    public Changeset(String id, List<String> additions, List<String> deletions, List<String> cleared, List<String> reinserted) {
+    public Changeset(String id, File additions, File deletions) {
         this.id = id;
 
         // Keep the changeset unique
-        this.additions = Collections.unmodifiableList(additions);
-        this.deletions = Collections.unmodifiableList(deletions);
-        this.cleared = Collections.unmodifiableList(cleared);
-        this.reinserted = Collections.unmodifiableList(reinserted);
+        this.additions = additions;
+        this.deletions = deletions;
     }
 
     public String getId() {
         return id;
     }
 
-    public List<String> getAdditions() {
+    public File getAdditions() {
         return additions;
     }
 
-    public List<String> getDeletions() {
+    public File getDeletions() {
         return deletions;
     }
 
-    public int triplesAdded() {
-        return additions.size();
-    }
-
-    public int triplesDeleted() {
-        return deletions.size();
-    }
-
-    public int triplesCleared() {
-        return cleared.size();
-    }
-
-    public int triplesReinserted() {
-        return reinserted.size();
-    }
-
-    public List<String> getCleared() {
-        return cleared;
-    }
-
-    public List<String> getReinserted() {
-        return reinserted;
-    }
 }

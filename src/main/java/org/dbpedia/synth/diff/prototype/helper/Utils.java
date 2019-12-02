@@ -43,13 +43,12 @@ public final class Utils {
     }
 
 
-    public static List<String> getTriplesFromBzip2File (String pathToFile) {
+    public static List<String> getTriplesFromBzip2File (File file) {
         //decompress file
-        String decompressedFilePath = decompressBzip2File(pathToFile);
+        String decompressedFilePath = decompressBzip2File(file);
         List<String> result;
         if (decompressedFilePath != null){
             result = getTriplesFromFile(decompressedFilePath);
-
         } else {
             result = null;
         }
@@ -160,12 +159,12 @@ public final class Utils {
         return false;
     }
 
-    private static String decompressBzip2File (String pathToFile) {
+    private static String decompressBzip2File (File file) {
 
-        logger.info("Decompressing the file "+pathToFile);
-        String filename = getUriIdentifier(pathToFile);
-        String outFilename = pathToFile.substring(0, pathToFile.lastIndexOf("."));
-        try (InputStream is = Files.newInputStream(Paths.get(pathToFile));
+        logger.info("Decompressing the file "+file);
+        String filename = getUriIdentifier(file.getAbsolutePath());
+        String outFilename = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf("."));
+        try (InputStream is = Files.newInputStream(file.toPath());
              BufferedInputStream in = new BufferedInputStream(is);
              BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
              OutputStreamWriter outStream = new OutputStreamWriter(new FileOutputStream(outFilename), StandardCharsets.UTF_8);
@@ -326,5 +325,9 @@ public final class Utils {
         } else {
             return null;
         }
+    }
+
+    public static boolean checkFileValidity(File file) {
+        if (file != null && file.exists() && file.isFile()) return true; else return false;
     }
 }

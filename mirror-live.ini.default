@@ -6,7 +6,7 @@ Store.class = virtuoso.jdbc4.Driver
 Store.dsn   = jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2
 Store.user  = dba
 Store.pw    = dba
-Store.querySize = 1000
+Store.querySize = 2000
 
 Dataset.name = dbpedia-diff-synth
 Dataset.releaser = denis

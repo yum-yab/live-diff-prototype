@@ -22,9 +22,9 @@ public class LastVersionFileWriter {
         Matcher jarMatcher = jarPattern.matcher(classespath);
         String returnpath;
 
-        if (normalMatcher.find()) {
+        if (normalMatcher.matches()) {
             returnpath = classespath;
-        } else if (jarMatcher.find()) {
+        } else if (jarMatcher.matches()) {
             returnpath = jarMatcher.group(1) + "/classes/";
         } else {
             returnpath = classespath;

@@ -6,6 +6,7 @@ import org.dbpedia.synth.diff.prototype.helper.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -16,6 +17,8 @@ public final class JDBCPoolConnection {
     //private static final Logger logger = LoggerFactory.getLogger(JDBCPoolConnection.class);
 
     private static volatile BoneCP connectionPool;
+
+
 
     /**
      * Instantiates a new JDBC pool connection.

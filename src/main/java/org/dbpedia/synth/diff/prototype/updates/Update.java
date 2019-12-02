@@ -41,17 +41,21 @@ public class Update {
       Map fileMap = updateFiles.get(graph);
       DBpediaFile addsfile = ((DBpediaFile) fileMap.get(FileType.ADDS));
       DBpediaFile deletesfile = ((DBpediaFile) fileMap.get(FileType.DELETES));
+      File realAddsFile = new File(addsfile.getFullPath());
+      File realDeletesFile = new File(deletesfile.getFullPath());
       // download the related files
       Utils.downloadFile(addsfile.downloadURL, addsfile.filepath);
       Utils.downloadFile(deletesfile.downloadURL, deletesfile.filepath);
 
       // add the files to the graph
       ChangesetExecutor executor = new ChangesetExecutor(new SPARULVosExecutor(), new SPARULGenerator(graph));
-      List<String> adds = Utils.getTriplesFromBzip2File(addsfile.filepath + File.separator + addsfile.filename);
-      List<String> deletes = Utils.getTriplesFromBzip2File(deletesfile.filepath + File.separator + deletesfile.filename);
-      Changeset changeset = new Changeset(id + "-" + graph,adds,deletes, new ArrayList<>(), new ArrayList<>());
-      //Changeset changeset = new Changeset(id + "-" + graph, adds, new HashSet<>(), new HashSet<>(), new HashSet<>());
-      executor.applyChangeset(changeset);
+      //List<String> adds = Utils.getTriplesFromBzip2File(addsfile.filepath + File.separator + addsfile.filename);
+      //List<String> deletes = Utils.getTriplesFromBzip2File(deletesfile.filepath + File.separator + deletesfile.filename);
+      if (Utils.checkFileValidity(realAddsFile) && Utils.checkFileValidity(realDeletesFile)){
+        Changeset changeset = new Changeset(id + "-" + graph,realAddsFile,realDeletesFile);
+        //Changeset changeset = new Changeset(id + "-" + graph, adds, new HashSet<>(), new HashSet<>(), new HashSet<>());
+        executor.applyChangeset(changeset);
+      }
     }
   }
 }
